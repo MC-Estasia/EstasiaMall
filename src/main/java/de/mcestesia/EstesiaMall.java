@@ -25,5 +25,7 @@ public class EstesiaMall extends JavaPlugin {
     private void init(){
         instance = this;
 
+        // Classes
+
     }
 }
