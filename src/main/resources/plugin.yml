@@ -1,0 +1,6 @@
+name: EstasiaMall
+version: 0.1
+author: EstasiaDevelopment<optymized>
+main: de.mcestasia.estasiamall.EstasiaMallBukkitPlugin
+
+commands:

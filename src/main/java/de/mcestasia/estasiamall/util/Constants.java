@@ -1,4 +1,4 @@
-package de.mcestesia.util;
+package de.mcestasia.estasiamall.util;
 
 public class Constants {
 
