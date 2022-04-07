@@ -4,3 +4,6 @@ author: EstasiaDevelopment<optymized>
 main: de.mcestasia.estasiamall.EstasiaMallBukkitPlugin
 
 commands:
+  shopsetup:
+    aliases: [mallsetup]
+    description: Erstelle einen Shop

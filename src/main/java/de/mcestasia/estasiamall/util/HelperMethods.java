@@ -14,4 +14,12 @@ public class HelperMethods {
         return newList;
     }
 
+    public static List<String> convertUUIDListToStringList(List<UUID> originalList) {
+        List<String> newList = new ArrayList<>();
+
+        originalList.forEach(uuid -> newList.add(uuid.toString()));
+
+        return newList;
+    }
+
 }

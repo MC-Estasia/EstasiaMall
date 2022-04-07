@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -38,7 +39,7 @@ public class ShopConfigurationManager {
 
     public void createFile() {
         if (!(this.shopDirectory.exists())) {
-            if (shopFile.mkdirs()) {
+            if (shopDirectory.mkdirs()) {
                 System.out.println("[!] Der Shop Ordner wurde erfolgreich erstellt.");
             }
         } else {
@@ -58,7 +59,7 @@ public class ShopConfigurationManager {
         }
     }
 
-    public boolean createShop(String shopId) {
+    public void createShop(String shopId) {
         if (!(this.isShopCreated(shopId))) {
             this.configuration.set(shopId + ".shopid", shopId);
             List<String> shops = this.configuration.getStringList("shops");
@@ -70,13 +71,11 @@ public class ShopConfigurationManager {
                 System.err.println("Der Shop " + shopId + " konnte nicht erstellt werden.");
                 exception.printStackTrace();
             }
-            return true;
         } else {
-            return false;
         }
     }
 
-    public boolean setShopOwner(String shopId, String shopOwner) {
+    public void setShopOwner(String shopId, String shopOwner) {
         if (this.isShopCreated(shopId)) {
             this.configuration.set(shopId + ".owner", shopOwner);
             try {
@@ -85,13 +84,23 @@ public class ShopConfigurationManager {
                 System.err.println("Der Inhaber des Shops " + shopId + " konnte nicht gesetzt werden.");
                 exception.printStackTrace();
             }
-            return true;
         } else {
-            return false;
         }
     }
 
-    public boolean setShopLocation(String shopID, Location location, ShopLocationType shopLocationType) {
+    public void setPermittedPlayers(String shopId, List<String> permittedPlayers) {
+        if (this.isShopCreated(shopId)) {
+            this.configuration.set(shopId + ".permitted", permittedPlayers);
+            try {
+                this.configuration.save(this.shopFile);
+            } catch (IOException exception) {
+                System.err.println("Die erlaubten Spieler des Shops " + shopId + " konnten nicht gesetzt werden.");
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    public void setShopLocation(String shopID, Location location, ShopLocationType shopLocationType) {
         if (this.isShopCreated(shopID)) {
             String world = Objects.requireNonNull(location.getWorld()).getName();
             double x = location.getX();
@@ -109,9 +118,7 @@ public class ShopConfigurationManager {
                 System.err.println("Die Shop Location des Shops " + shopID + " konnte nicht gesetzt werden.");
                 e.printStackTrace();
             }
-            return true;
         } else {
-            return false;
         }
     }
 
@@ -137,7 +144,7 @@ public class ShopConfigurationManager {
 
     public boolean isShopOwned(String shopID) {
         if (this.isShopCreated(shopID)) {
-            return this.configuration.isSet(shopID + ".owner") && ! Objects.equals(this.configuration.getString(shopID + ".owner"), "");
+            return this.configuration.isSet(shopID + ".owner") && !Objects.equals(this.configuration.getString(shopID + ".owner"), "00000000-0000-0000-0000-000000000000");
         }
         return true;
     }
@@ -158,15 +165,29 @@ public class ShopConfigurationManager {
 
     public void loadShops() {
         for (String shop : this.configuration.getStringList("shops")) {
-            ShopModel shopModel = new ShopModel(UUID.fromString(shop),
-                    UUID.fromString(this.getOwnerUUID(shop)),
-                    this.getShopLocation(shop, ShopLocationType.LOWER),
-                    this.getShopLocation(shop, ShopLocationType.HIGHER),
-                    this.getShopLocation(shop, ShopLocationType.SIGN),
-                    HelperMethods.convertStringListToUUIDList(getPermittedPlayer(shop)));
+            ShopModel shopModel = new ShopModel()
+                    .setShopId(UUID.fromString(shop))
+                    .setOwnerUUID(UUID.fromString(this.getOwnerUUID(shop)))
+                    .setLowerBoundary(this.getShopLocation(shop, ShopLocationType.LOWER))
+                    .setHigherBoundary(this.getShopLocation(shop, ShopLocationType.HIGHER))
+                    .setSignLocation(this.getShopLocation(shop, ShopLocationType.SIGN))
+                    .setHologramLocation(this.getShopLocation(shop, ShopLocationType.HOLOGRAM))
+                    .setPermitted(HelperMethods.convertStringListToUUIDList(this.getPermittedPlayer(shop)));
             this.registeredShops.put(shop, shopModel);
             this.registeredShopList.add(shopModel);
         }
+    }
+
+    public void reload() {
+        try {
+            this.configuration.load(this.shopFile);
+        } catch (IOException | InvalidConfigurationException exception) {
+            System.out.println("[!] Die Shop-Datei konnte nicht geladen werden.");
+            exception.printStackTrace();
+        }
+        this.registeredShops.clear();
+        this.registeredShopList.clear();
+        this.loadShops();
     }
 
 }

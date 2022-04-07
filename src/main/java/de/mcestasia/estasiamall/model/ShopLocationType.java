@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ShopLocationType {
 
-    LOWER("lower"), HIGHER("higher"), SIGN("sign");
+    LOWER("lower"), HIGHER("higher"), SIGN("sign"), HOLOGRAM("hologram");
 
     private final String configurationName;
 
