@@ -1,12 +1,14 @@
 package de.mcestasia.estasiamall.manager;
 
 import de.mcestasia.estasiamall.EstasiaMallBukkitPlugin;
+import de.mcestasia.estasiamall.model.Cuboid;
 import de.mcestasia.estasiamall.model.ShopLocationType;
 import de.mcestasia.estasiamall.model.ShopModel;
 import de.mcestasia.estasiamall.util.HelperMethods;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,7 +26,9 @@ public class ShopConfigurationManager {
     private final File shopFile;
     private final FileConfiguration configuration;
     private final HashMap<String, ShopModel> registeredShops;
+    private final HashMap<ShopModel, Cuboid> shopRegions;
     private final List<ShopModel> registeredShopList;
+    private World mallWorld;
 
     public ShopConfigurationManager() {
         this.plugin = EstasiaMallBukkitPlugin.instance;
@@ -32,6 +36,7 @@ public class ShopConfigurationManager {
         this.shopFile = new File(this.shopDirectory, "shops.yml");
         this.registeredShops = new HashMap<>();
         this.registeredShopList = new ArrayList<>();
+        this.shopRegions = new HashMap<>();
         this.createFile();
         this.configuration = YamlConfiguration.loadConfiguration(this.shopFile);
         this.loadShops();
@@ -71,7 +76,6 @@ public class ShopConfigurationManager {
                 System.err.println("Der Shop " + shopId + " konnte nicht erstellt werden.");
                 exception.printStackTrace();
             }
-        } else {
         }
     }
 
@@ -85,6 +89,20 @@ public class ShopConfigurationManager {
                 exception.printStackTrace();
             }
         } else {
+        }
+    }
+
+    public void addPermittedPlayer(String shopId, String permittedPlayerUUID) {
+        if (this.isShopCreated(shopId)) {
+            List<String> permittedPlayers = this.getPermittedPlayers(shopId);
+            permittedPlayers.add(permittedPlayerUUID);
+            this.configuration.set(shopId + ".permittedplayers", permittedPlayers);
+            try {
+                this.configuration.save(this.shopFile);
+            } catch (IOException exception) {
+                System.err.println("Der Spieler " + permittedPlayerUUID + " konnte nicht dem Shop " + shopId + " hinzugefügt werden.");
+                exception.printStackTrace();
+            }
         }
     }
 
@@ -156,11 +174,15 @@ public class ShopConfigurationManager {
         return "";
     }
 
-    public List<String> getPermittedPlayer(String shopID) {
+    public List<String> getPermittedPlayers(String shopID) {
         if (this.isShopCreated(shopID)) {
             return this.configuration.getStringList(shopID + ".permitted");
         }
         return new ArrayList<>();
+    }
+
+    public ShopModel getModelByUUID(String shopID) {
+        return this.registeredShops.getOrDefault(shopID, null);
     }
 
     public void loadShops() {
@@ -172,10 +194,14 @@ public class ShopConfigurationManager {
                     .setHigherBoundary(this.getShopLocation(shop, ShopLocationType.HIGHER))
                     .setSignLocation(this.getShopLocation(shop, ShopLocationType.SIGN))
                     .setHologramLocation(this.getShopLocation(shop, ShopLocationType.HOLOGRAM))
-                    .setPermitted(HelperMethods.convertStringListToUUIDList(this.getPermittedPlayer(shop)));
+                    .setPermitted(HelperMethods.convertStringListToUUIDList(this.getPermittedPlayers(shop)));
             this.registeredShops.put(shop, shopModel);
             this.registeredShopList.add(shopModel);
+            this.shopRegions.put(shopModel, new Cuboid(shopModel.getLowerBoundary(), shopModel.getHigherBoundary()));
         }
+
+        if(this.shopRegions.size() >= 1)
+            this.setMallWorld(this.registeredShopList.get(this.registeredShopList.size() - 1).getSignLocation().getWorld());
     }
 
     public void reload() {
@@ -188,6 +214,10 @@ public class ShopConfigurationManager {
         this.registeredShops.clear();
         this.registeredShopList.clear();
         this.loadShops();
+    }
+
+    private void setMallWorld(World world) {
+        this.mallWorld = world;
     }
 
 }
