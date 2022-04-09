@@ -80,7 +80,6 @@ public class EstasiaMallBukkitPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("shoplist")).setExecutor(new ShopListCommand());
         Objects.requireNonNull(this.getCommand("shopadminbuild")).setExecutor(new ShopAdminBuildCommand());
         Objects.requireNonNull(this.getCommand("animationflex")).setExecutor(new AnimationFlexCommand());
-        Objects.requireNonNull(this.getCommand("test")).setExecutor(new TestCommand());
 
         // Listener
         pluginManager.registerEvents(new PlayerConnectionListener(), this);

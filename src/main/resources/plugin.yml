@@ -23,4 +23,3 @@ commands:
     aliases: [ animationtest ]
     description: Flexe mit der coolsten Animation
     permission: de.mcestasia.estasiamall.command.animationflex
-  test:
