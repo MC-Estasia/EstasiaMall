@@ -1,5 +1,5 @@
 name: EstasiaMall
-version: 0.1
+version: 1.0
 author: EstasiaDevelopment<optymized>
 main: de.mcestasia.estasiamall.EstasiaMallBukkitPlugin
 api-version: 1.18
@@ -10,12 +10,17 @@ commands:
   shopsetup:
     aliases: [ mallsetup ]
     description: Erstelle einen Shop
+    permission: de.mcestasia.estasiamall.command.shopsetup
   shoplist:
     aliases: [ malllist ]
     description: Liste alle Shops auf
+    permission: de.mcestasia.estasiamall.command.shoplist
   shopadminbuild:
     aliases: [ malladminbuild ]
     description: Ignoriere das Bauverbot und baue in der kompletten Mallwelt
+    permission: de.mcestasia.estasiamall.command.shopadminbuild
   animationflex:
     aliases: [ animationtest ]
     description: Flexe mit der coolsten Animation
+    permission: de.mcestasia.estasiamall.command.animationflex
+  test:

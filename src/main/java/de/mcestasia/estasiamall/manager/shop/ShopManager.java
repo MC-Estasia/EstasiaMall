@@ -1,10 +1,9 @@
-package de.mcestasia.estasiamall.manager;
+package de.mcestasia.estasiamall.manager.shop;
 
 import de.mcestasia.estasiamall.EstasiaMallBukkitPlugin;
-import de.mcestasia.estasiamall.model.ShopModel;
+import de.mcestasia.estasiamall.model.shop.ShopModel;
 import de.mcestasia.estasiamall.util.HelperMethods;
 import de.mcestasia.estasiamall.util.ItemFactory;
-import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -39,13 +38,16 @@ public class ShopManager {
         for (ShopModel shopModel : this.plugin.getShopConfigurationManager().getRegisteredShopList()) {
             if (this.plugin.getShopConfigurationManager().isShopOwned(shopModel.getShopId().toString())) {
 
-                ArmorStand stand = shopModel.getHologramLocation().getWorld().spawn(shopModel.getHologramLocation(), ArmorStand.class);
+                Location toSpawn = shopModel.getHologramLocation().add(0, 0.65, 0);
+                ArmorStand stand = toSpawn.getWorld().spawn(toSpawn, ArmorStand.class);
                 stand.setVisible(false);
-                stand.setCustomName("§5§l" + HelperMethods.getName(shopModel.getOwnerUUID().toString()) + "§d§l's §5Shop");
+                stand.setCustomName("§5" + HelperMethods.getName(shopModel.getOwnerUUID().toString()) + "'s Shop");
                 stand.setCustomNameVisible(true);
                 stand.getEquipment().setHelmet(new ItemFactory(Material.PLAYER_HEAD, 1).skullFromUUID(shopModel.getOwnerUUID()).build());
                 stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
                 stand.setPersistent(false);
+                stand.setSmall(true);
+                stand.setGravity(false);
 
                 new BukkitRunnable() {
 
@@ -54,7 +56,7 @@ public class ShopManager {
                     @Override
                     public void run() {
 
-                        rotation += 0.05f;
+                        rotation -= 0.05f;
                         stand.setHeadPose(new EulerAngle(0, rotation, 0));
 
                     }
@@ -64,11 +66,15 @@ public class ShopManager {
                 continue;
             }
 
-            ArmorStand stand = shopModel.getHologramLocation().getWorld().spawn(shopModel.getHologramLocation(), ArmorStand.class);
+            Location toSpawn = shopModel.getHologramLocation().clone().add(0, 0.65, 0);
+            ArmorStand stand = toSpawn.getWorld().spawn(toSpawn, ArmorStand.class);
             stand.setVisible(false);
-            stand.setCustomName("§c§lKein §4Inhaber");
+            stand.setCustomName("§c§lKein §4§lInhaber");
             stand.setCustomNameVisible(true);
             stand.getEquipment().setHelmet(HelperMethods.getSkullFromURL("" + "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJhZGRhZDljYWNlYjA1ZjM0YmRjZjMyOTM3Yjk1ZDJjNDRkZDc0NDRhMTVmNzZhOTM4NWMzMjhmY2FiIn19fQ==", "§c§lNiemand"));
+            stand.setSmall(true);
+            stand.setGravity(false);
+
             new BukkitRunnable() {
 
                 float rotation = 0;
@@ -76,7 +82,7 @@ public class ShopManager {
                 @Override
                 public void run() {
 
-                    rotation += 0.05f;
+                    rotation -= 0.05f;
                     stand.setHeadPose(new EulerAngle(0, rotation, 0));
 
                 }
@@ -91,8 +97,20 @@ public class ShopManager {
 
     public void refreshArmorStand(ShopModel shopModel) {
         ArmorStand currentStand = this.shopHologramMap.get(shopModel);
-        currentStand.getEquipment().setHelmet(new ItemFactory(Material.PLAYER_HEAD, 1).skullFromUUID(shopModel.getOwnerUUID()).build());
-        currentStand.setCustomName("§5§l" + HelperMethods.getName(shopModel.getOwnerUUID().toString()) + "§d§l's §5Shop");
+
+        currentStand.setSmall(true);
+        currentStand.setGravity(false);
+        currentStand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
+
+        if(this.plugin.getShopConfigurationManager().isShopOwned(shopModel.getShopId().toString())) {
+            currentStand.getEquipment().setHelmet(new ItemFactory(Material.PLAYER_HEAD, 1).skullFromUUID(shopModel.getOwnerUUID()).build());
+            currentStand.setCustomName("§5" + HelperMethods.getName(shopModel.getOwnerUUID().toString()) + "'s Shop");
+            return;
+        }
+
+        currentStand.getEquipment().setHelmet(HelperMethods.getSkullFromURL("" + "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJhZGRhZDljYWNlYjA1ZjM0YmRjZjMyOTM3Yjk1ZDJjNDRkZDc0NDRhMTVmNzZhOTM4NWMzMjhmY2FiIn19fQ==", "§c§lNiemand"));
+        currentStand.setCustomName("§c§lKein §4§lInhaber");
+
     }
 
     public void setSigns() {
@@ -178,5 +196,7 @@ public class ShopManager {
         this.refreshArmorStand(shopModel);
         this.refreshSign(shopModel);
     }
+
+
 
 }

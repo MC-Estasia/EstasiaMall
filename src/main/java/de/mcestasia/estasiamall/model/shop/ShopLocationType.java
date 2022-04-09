@@ -1,4 +1,4 @@
-package de.mcestasia.estasiamall.model;
+package de.mcestasia.estasiamall.model.shop;
 
 import lombok.Getter;
 

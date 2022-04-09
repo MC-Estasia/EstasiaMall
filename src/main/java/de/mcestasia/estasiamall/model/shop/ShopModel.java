@@ -1,7 +1,7 @@
-package de.mcestasia.estasiamall.model;
+package de.mcestasia.estasiamall.model.shop;
 
 import de.mcestasia.estasiamall.EstasiaMallBukkitPlugin;
-import de.mcestasia.estasiamall.manager.ShopConfigurationManager;
+import de.mcestasia.estasiamall.manager.shop.ShopConfigurationManager;
 import de.mcestasia.estasiamall.util.HelperMethods;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,7 +70,18 @@ public class ShopModel {
 
     public ShopModel save() {
         ShopConfigurationManager shopConfigurationManager = EstasiaMallBukkitPlugin.instance.getShopConfigurationManager();
-        shopConfigurationManager.createShop(String.valueOf(this.shopId));
+
+        if(!(shopConfigurationManager.isShopCreated(this.shopId.toString()))) {
+            shopConfigurationManager.createShop(String.valueOf(this.shopId));
+            shopConfigurationManager.setShopOwner(String.valueOf(this.shopId), String.valueOf(this.ownerUUID));
+            shopConfigurationManager.setPermittedPlayers(String.valueOf(this.shopId), HelperMethods.convertUUIDListToStringList(this.permitted));
+            shopConfigurationManager.setShopLocation(String.valueOf(this.shopId), this.lowerBoundary, ShopLocationType.LOWER);
+            shopConfigurationManager.setShopLocation(String.valueOf(this.shopId), this.higherBoundary, ShopLocationType.HIGHER);
+            shopConfigurationManager.setShopLocation(String.valueOf(this.shopId), this.signLocation, ShopLocationType.SIGN);
+            shopConfigurationManager.setShopLocation(String.valueOf(this.shopId), this.hologramLocation, ShopLocationType.HOLOGRAM);
+            return this;
+        }
+
         shopConfigurationManager.setShopOwner(String.valueOf(this.shopId), String.valueOf(this.ownerUUID));
         shopConfigurationManager.setPermittedPlayers(String.valueOf(this.shopId), HelperMethods.convertUUIDListToStringList(this.permitted));
         shopConfigurationManager.setShopLocation(String.valueOf(this.shopId), this.lowerBoundary, ShopLocationType.LOWER);

@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.mcestasia.estasiamall.EstasiaMallBukkitPlugin;
 import de.mcestasia.estasiamall.model.Cuboid;
-import de.mcestasia.estasiamall.model.ShopModel;
+import de.mcestasia.estasiamall.model.shop.ShopModel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

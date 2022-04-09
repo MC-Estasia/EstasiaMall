@@ -1,9 +1,9 @@
-package de.mcestasia.estasiamall.manager;
+package de.mcestasia.estasiamall.manager.shop;
 
 import de.mcestasia.estasiamall.EstasiaMallBukkitPlugin;
 import de.mcestasia.estasiamall.model.Cuboid;
-import de.mcestasia.estasiamall.model.ShopLocationType;
-import de.mcestasia.estasiamall.model.ShopModel;
+import de.mcestasia.estasiamall.model.shop.ShopLocationType;
+import de.mcestasia.estasiamall.model.shop.ShopModel;
 import de.mcestasia.estasiamall.util.HelperMethods;
 import lombok.Getter;
 import org.bukkit.Bukkit;

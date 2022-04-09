@@ -23,7 +23,6 @@ public class BuildManager {
         shopAdminList.add(player);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
         player.setGameMode(GameMode.CREATIVE);
-        player.setVelocity(new Vector(0.5, 3, 0));
         player.setAllowFlight(true);
         player.setFlying(true);
         player.sendMessage(PREFIX + "Du kannst §anun §7bauen!");

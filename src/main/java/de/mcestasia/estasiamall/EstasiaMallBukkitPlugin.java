@@ -1,16 +1,15 @@
 package de.mcestasia.estasiamall;
 
-import de.mcestasia.estasiamall.command.ShopAdminBuildCommand;
-import de.mcestasia.estasiamall.command.ShopListCommand;
-import de.mcestasia.estasiamall.command.ShopSetupCommand;
-import de.mcestasia.estasiamall.command.AnimationFlexCommand;
+import de.mcestasia.estasiamall.command.*;
 import de.mcestasia.estasiamall.listener.InventoryListener;
+import de.mcestasia.estasiamall.listener.PlayerConnectionListener;
 import de.mcestasia.estasiamall.listener.SetupListener;
 import de.mcestasia.estasiamall.listener.ShopListener;
 import de.mcestasia.estasiamall.manager.BalanceManager;
 import de.mcestasia.estasiamall.manager.BuildManager;
-import de.mcestasia.estasiamall.manager.ShopConfigurationManager;
-import de.mcestasia.estasiamall.manager.ShopManager;
+import de.mcestasia.estasiamall.manager.ManipulationManager;
+import de.mcestasia.estasiamall.manager.shop.ShopConfigurationManager;
+import de.mcestasia.estasiamall.manager.shop.ShopManager;
 import de.mcestasia.estasiamall.setup.SetupHandler;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -31,6 +30,7 @@ public class EstasiaMallBukkitPlugin extends JavaPlugin {
     private SetupHandler setupHandler;
     private ShopManager shopManager;
     private BuildManager buildManager;
+    private ManipulationManager manipulationManager;
 
     // Economy
     private Economy economy;
@@ -67,6 +67,7 @@ public class EstasiaMallBukkitPlugin extends JavaPlugin {
         this.setupHandler = new SetupHandler();
         this.shopManager = new ShopManager();
         this.buildManager = new BuildManager();
+        this.manipulationManager = new ManipulationManager();
 
         // Economy
         this.registeredEconomyProvider = this.getServer().getServicesManager().getRegistration(Economy.class);
@@ -79,8 +80,10 @@ public class EstasiaMallBukkitPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("shoplist")).setExecutor(new ShopListCommand());
         Objects.requireNonNull(this.getCommand("shopadminbuild")).setExecutor(new ShopAdminBuildCommand());
         Objects.requireNonNull(this.getCommand("animationflex")).setExecutor(new AnimationFlexCommand());
+        Objects.requireNonNull(this.getCommand("test")).setExecutor(new TestCommand());
 
         // Listener
+        pluginManager.registerEvents(new PlayerConnectionListener(), this);
         pluginManager.registerEvents(new SetupListener(), this);
         pluginManager.registerEvents(new ShopListener(), this);
         pluginManager.registerEvents(new InventoryListener(), this);

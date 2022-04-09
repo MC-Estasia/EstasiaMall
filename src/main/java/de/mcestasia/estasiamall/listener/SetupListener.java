@@ -1,7 +1,7 @@
 package de.mcestasia.estasiamall.listener;
 
 import de.mcestasia.estasiamall.EstasiaMallBukkitPlugin;
-import de.mcestasia.estasiamall.model.ShopModel;
+import de.mcestasia.estasiamall.model.shop.ShopModel;
 import de.mcestasia.estasiamall.setup.SetupStep;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
